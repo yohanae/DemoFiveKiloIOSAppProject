@@ -1,20 +1,19 @@
 //
-//  ViewController.swift
+//  MyTabBarController.swift
 //  NewFiveKiloIOSAppProject
 //
-//  Created by yoyo on 7/14/19.
+//  Created by yoyo on 7/25/19.
 //  Copyright © 2019 Compitence Over Identity Technologies. All rights reserved.
 //
 
 import UIKit
+import Firebase
 
-class ViewController: UIViewController {
+class MyTabBarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
     }
-
+  
 
 }
-
