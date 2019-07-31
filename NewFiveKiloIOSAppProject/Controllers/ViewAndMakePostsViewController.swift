@@ -23,10 +23,12 @@ class ViewAndMakePostsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-          Timer.scheduledTimer(timeInterval: 00.1, target: self, selector: #selector(ViewAndMakePostsViewController.reloadCollectionviewData), userInfo: nil, repeats: true)
+        fetchAndDisplayUserPosts()
+        Timer.scheduledTimer(timeInterval: 00.1, target: self, selector: #selector(ViewAndMakePostsViewController.reloadCollectionviewData), userInfo: nil, repeats: true)
     }
     
-   
+
+
     func getPost(at index: Int) -> Post {
         return post [index]
     }
@@ -37,87 +39,24 @@ class ViewAndMakePostsViewController: UIViewController {
     
     
     
-    
-    
     func fetchAndDisplayUserPosts() {
+        
         var ref: DatabaseReference!
         ref = Database.database().reference()
         
-        let postID = Auth.auth().currentUser?.providerID
-        ref.child("post").child(postID!).observeSingleEvent(of: .value, with: { (snapshot) in
-            // we're now Getting user value
-            
-            DispatchQueue.main.async {
-                guard let value = snapshot.value as? [String:Any] else {
-                    print("error here")
-                    return
-                }
-                
-                self.post.append(Post(data: value))
-                print(self.post)
-                
-            }
+        ref.child("post").observe(.childAdded, with: { (snapshot) -> Void in
         
-            let userPostCell = self.allUsersPostsCollectionView.dequeueReusableCell(withReuseIdentifier: "userPostCell", for: (self.cellForItemAtIndexPath)!) as! UsersPostsCollectionViewCell
-            self.scoreCell = userPostCell
-        
-            let getPost = self.getPost(at: self.theCurrentIndexPathRow)
-            let name = getPost.name
-            let post = getPost.post
-        
-            userPostCell.usernameLabel.text = name
-            userPostCell.userPostLabel.text = post
+            // we're now Getting post values
+            let value = snapshot.value as? [String:Any]
+            self.post.append(Post(data: value!))
             self.allUsersPostsCollectionView.reloadData()
+            
         })
- }
-
-
-
-    
-    
-    
-    
-//    func fetchAndDisplayUserPosts() {
-//
-//        var ref: DatabaseReference!
-//        ref = Database.database().reference()
-//        ref.child("post").observe(.value, with: { (snapshot) in
-//            // we're now Getting user value
-//
-//            DispatchQueue.main.async {
-//                if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-//                    for _ in snapshots {
-//                        guard let value = snapshot.value as? [String:Any] else {
-//                            print("error here")
-//                            return
-//                        }
-//
-//                self.post.append(Post(data: value))
-//                print(self.post)
-//
-//                    }
-//                }
-//
-//                let userPostCell = self.allUsersPostsCollectionView.dequeueReusableCell(withReuseIdentifier: "userPostCell", for: (self.cellForItemAtIndexPath)!) as! UsersPostsCollectionViewCell
-//                self.scoreCell = userPostCell
-//
-//                let getPost = self.getPost(at: self.theCurrentIndexPathRow)
-//                let name = getPost.name
-//                let post = getPost.post
-//
-//                userPostCell.usernameLabel.text = name
-//                userPostCell.userPostLabel.text = post
-//                self.allUsersPostsCollectionView.reloadData()
-//            }
-//        })
-//    }
-//    
-//    
-    
-
-
+    }
     
 }
+
+
 
 
 extension ViewAndMakePostsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -128,8 +67,17 @@ extension ViewAndMakePostsViewController: UICollectionViewDelegate, UICollection
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         cellForItemAtIndexPath = indexPath
         theCurrentIndexPathRow = indexPath.row
-        fetchAndDisplayUserPosts()
-        return scoreCell!
+        
+        let userPostCell = self.allUsersPostsCollectionView.dequeueReusableCell(withReuseIdentifier: "userPostCell", for: self.cellForItemAtIndexPath!) as! UsersPostsCollectionViewCell
+        
+        let getPost = self.getPost(at: self.theCurrentIndexPathRow)
+        let name = getPost.name
+        let post = getPost.post
+        
+        userPostCell.usernameLabel.text = ("Anonymous User Name: \n \(name)")
+        userPostCell.userPostLabel.text = post
+        
+        return userPostCell
     }
     
     

@@ -37,11 +37,11 @@ class PostViewController: UIViewController {
         
     
         
-        guard let postID = Auth.auth().currentUser?.providerID else {
-            return
-        }
+//        guard let postID = Auth.auth().currentUser?. else {
+//            return
+//        }
         
-        //let postID = NSUUID().uuidString
+        let postID = NSUUID().uuidString
         let values = ["name": username, "post": userPost] as [String : Any]
         self.registerUsersPostIntoDatabase(postID: postID, values: values as [String : AnyObject])
         
